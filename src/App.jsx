@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [n, setN] = useState(5);
+  const [tablero, setTablero] = useState([]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      <h1>Knight's Tour Visualizer</h1>
 
-export default App
+      <div className="inputs">
+        <label>
+          Tamaño del tablero (n):
+          <input
+            type="number"
+            value={n}
+            onChange={(e) => setN(parseInt(e.target.value))}
+          />
+        </label>
+
+        <label>
+          Mostrar pasos:
+          <input type="checkbox" />
+        </label>
+
+        <label>
+          Fila inicial:
+          <input type="number" min={0} max={n - 1} />
+        </label>
+
+        <label>
+          Columna inicial:
+          <input type="number" min={0} max={n - 1} />
+        </label>
+
+        <button>Iniciar Knight's Tour</button>
+      </div>
+    </div>
+  );
+}
