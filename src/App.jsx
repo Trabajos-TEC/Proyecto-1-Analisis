@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Tablero from "./components/Tablero";
+import Contadores from "./components/Contadores";
 
 export default function App() {
   const [n, setN] = useState(5);
@@ -35,6 +37,9 @@ export default function App() {
 
         <button>Iniciar Knight's Tour</button>
       </div>
+
+      <Tablero tablero={tablero} />
+      <Contadores contador={{ count: 0, backtracks: 0 }} />
     </div>
   );
 }
