@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import Tablero from "./components/Tablero";
 import Contadores from "./components/Contadores";
-import { generarMatriz, knightTourPasoAPaso } from "./utils";
+import {recorrido_abierto } from "./recorrido_abierto";
+import {recorrido_cerrado } from "./recorrido_cerrado";
+import { generarMatriz} from "./generar_matriz";
 import "./App.css";
 
 export default function App() {
@@ -13,6 +15,7 @@ export default function App() {
   const [contador, setContador] = useState({ count: 0, backtracks: 0 });
   const [ejecutando, setEjecutando] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [mensaje2, setMensaje2] = useState(""); // ✅ corregido nombre duplicado
   const [inicio, setInicio] = useState(Date.now());
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
 
@@ -24,16 +27,17 @@ export default function App() {
 
   const ejecutar = async () => {
     setEjecutando(true);
-    setInicio(Date.now());
+    const tiempoInicio = Date.now(); // ⏱️ Tomamos el inicio real aquí
+    setInicio(tiempoInicio);
     setMensaje("");
+    setMensaje2("");
 
     const t = generarMatriz(n);
     setTablero(t);
     setContador({ count: 0, backtracks: 0 });
-
     setPosActual({ x: posX, y: posY });
 
-    const exito = await knightTourPasoAPaso(
+    const exito = await recorrido_abierto(
       posX,
       posY,
       0,
@@ -41,14 +45,18 @@ export default function App() {
       mostrar,
       setTablero,
       setContador,
-      inicio,
+      tiempoInicio,
       setPosActual
     );
+
+    const tiempoFinal = Date.now();
+    const duracionSegundos = ((tiempoFinal - tiempoInicio) / 1000).toFixed(2);
 
     setEjecutando(false);
     setMensaje(
       exito ? "¡Se encontró una solución!" : "No se encontró solución."
     );
+    setMensaje2(`Tiempo de ejecución: ${duracionSegundos} segundos`);
   };
 
   return (
@@ -121,7 +129,7 @@ export default function App() {
       <Tablero tablero={tablero} posActual={posActual} />
       <Contadores
         contador={contador}
-        mensaje={mensaje}
+        mensaje={`${mensaje} ${mensaje2}`} // ✅ Muestra ambos mensajes juntos
         ejecutando={ejecutando}
         inicio={inicio}
       />

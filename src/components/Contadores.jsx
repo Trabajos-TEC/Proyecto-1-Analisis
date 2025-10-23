@@ -12,4 +12,4 @@ export default function Contadores({ contador, mensaje, ejecutando, inicio }) {
       )}
     </div>
   );
-}
+} 
