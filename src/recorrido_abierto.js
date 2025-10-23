@@ -13,18 +13,6 @@ const movimientosPosibles = [
   [2, -1],
 ];
 
-export function generarMatriz(n) {
-    let res = [];
-    for (let i = 0; i < n; i++) {
-        let temp = [];
-        for (let j = 0; j < n; j++) {
-            temp.push(-1);
-        }
-        res.push(temp);
-    }
-    return res;
-}
-
 
 function esValido(x, y, tablero) {
   const n = tablero.length;
@@ -43,7 +31,7 @@ function esValido(x, y, tablero) {
   return true;
 }
 
-export async function knightTourPasoAPaso(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual){ // actualiza la posición del caballo) 
+export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual){ // actualiza la posición del caballo) 
   
   const t = [];
   for (let i = 0; i < tablero.length; i++) {
@@ -65,14 +53,14 @@ export async function knightTourPasoAPaso(x,y,paso,tablero,mostrar,setTablero,se
   setTablero(t);
 
   let tiempoTranscurrido = (Date.now() - inicio) / 1000;
-  let delay = 300;
+  let delay = 0;
 
   if (tiempoTranscurrido > 10 && tiempoTranscurrido <= 20) {
-    delay = 100;
+    delay = 0;
   }
 
   if (tiempoTranscurrido > 20) {
-    delay = 50;
+    delay = 0;
   }
 
   if (mostrar) {
@@ -94,7 +82,7 @@ export async function knightTourPasoAPaso(x,y,paso,tablero,mostrar,setTablero,se
     const yNuevo = y + moves[1];
     
     if (esValido(xNuevo, yNuevo, t)) {
-      if ((await knightTourPasoAPaso(xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual))){
+      if ((await recorrido_abierto(xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual))){
         return true;
       }
     }
