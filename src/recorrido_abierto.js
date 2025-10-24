@@ -31,8 +31,7 @@ function esValido(x, y, tablero) {
   return true;
 }
 
-export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual){ // actualiza la posición del caballo) 
-  
+export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual,primerPasoIntentos = 0){ 
   const t = [];
   for (let i = 0; i < tablero.length; i++) {
     const fila = [];
@@ -76,15 +75,20 @@ export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setC
   for (let i = 0; i < movimientosPosibles.length; i++) {
     let moves = movimientosPosibles[i]
   
-    if (paso === 0){
-      moves = movimientosPosibles[random(0,7)]
-    }
-
     const xNuevo = x + moves[0];
     const yNuevo = y + moves[1];
     
     if (esValido(xNuevo, yNuevo, t)) {
-      if ((await recorrido_abierto(xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual))){
+      // Verificamos si ya hemos intentado todas las opciones desde el primer paso
+
+      let nuevosIntentosPrimerPaso = primerPasoIntentos;
+      if (paso === 0) nuevosIntentosPrimerPaso++;
+
+      if (paso === 0 && nuevosIntentosPrimerPaso >= 8) {
+          return "NO_SOLUCION";
+      }
+
+      if ((await recorrido_abierto(xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual, nuevosIntentosPrimerPaso))){
         return true;
       }
     }

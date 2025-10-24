@@ -7,8 +7,8 @@ import { generarMatriz } from "./generar_matriz";
 import "./App.css";
 
 export default function App() {
-  const [n, setN] = useState(5);
-  const [tablero, setTablero] = useState(generarMatriz(5));
+  const [n, setN] = useState(4);
+  const [tablero, setTablero] = useState(generarMatriz(4));
   const [mostrar, setMostrar] = useState(true);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
@@ -18,7 +18,7 @@ export default function App() {
   const [mensaje2, setMensaje2] = useState("");
   const [inicio, setInicio] = useState(Date.now());
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
-  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); // 🔹 nuevo estado
+  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); 
 
   useEffect(() => {
     if (!ejecutando) {
@@ -71,13 +71,20 @@ export default function App() {
     const duracionSegundos = ((tiempoFinal - tiempoInicio) / 1000).toFixed(2);
 
     setEjecutando(false);
-    setMensaje(
-      exito
-        ? `¡Se encontró una solución (${tipoRecorrido})!`
-        : `No se encontró solución (${tipoRecorrido}).`
-    );
+    if (exito === "NO_SOLUCION") {
+      setMensaje(`No hay solución posible desde la posición inicial (${posX}, ${posY})`);
+    } else {
+      setMensaje(
+        exito
+          ? `¡Se encontró una solución (${tipoRecorrido})!`
+          : `No se encontró solución (${tipoRecorrido}).`
+      );
+    }
+
     setMensaje2(`Tiempo de ejecución: ${duracionSegundos} segundos`);
   };
+
+
 
   return (
     <div className="app">
@@ -90,8 +97,15 @@ export default function App() {
             type="number"
             value={n}
             disabled={ejecutando}
+            min={4}
+            max={7}
             onChange={(e) => {
               const val = parseInt(e.target.value);
+              
+              if (isNaN(val) || val < 4 || val >= 8) {
+                alert(`La dimensión del tablero debe estar entre 4 y 7.`);
+                return;
+               }
               setN(val);
               setTablero(generarMatriz(val));
               setPosActual({ x: 0, y: 0 });
@@ -115,10 +129,14 @@ export default function App() {
             type="number"
             value={posX}
             disabled={ejecutando}
-            min={0}
-            max={n - 1}
+            min={-1}
+            max={n}
             onChange={(e) => {
               const x = parseInt(e.target.value);
+              if (isNaN(x) || x < 0 || x >= n) {
+                alert(`La fila inicial debe estar entre 0 y ${n - 1}.`);
+                return;
+              }
               setPosX(x);
               if (!ejecutando) setPosActual({ x, y: posY });
             }}
@@ -131,15 +149,20 @@ export default function App() {
             type="number"
             value={posY}
             disabled={ejecutando}
-            min={0}
-            max={n - 1}
+            min={-1}
+            max={n}
             onChange={(e) => {
               const y = parseInt(e.target.value);
+              if (isNaN(y) || y < 0 || y >= n) {
+                alert(`La columna inicial debe estar entre 0 y ${n - 1}.`);
+                return;
+              }
               setPosY(y);
               if (!ejecutando) setPosActual({ x: posX, y });
             }}
           />
         </label>
+
 
         {/* 🔹 Selector de tipo de recorrido */}
         <label id="label-tipo-recorrido" className="input-tipo-recorrido">
@@ -155,7 +178,6 @@ export default function App() {
             <option value="cerrado">Recorrido Cerrado</option>
           </select>
         </label>
-
 
         <button onClick={ejecutar} disabled={ejecutando}>
           {ejecutando ? "Ejecutando..." : "Iniciar Knight's Tour"}
