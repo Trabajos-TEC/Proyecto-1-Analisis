@@ -79,7 +79,7 @@ export async function recorrido_cerrado(
 
   const size = t.length;
 
-  // ✅ Condición de éxito (recorrido cerrado)
+  // Condición de éxito (recorrido cerrado)
   if (paso === size * size - 1) {
     for (const move of movimientosPosibles) {
       const xCierre = x + move[0];
@@ -94,10 +94,6 @@ export async function recorrido_cerrado(
   // Exploramos movimientos
   for (let i = 0; i < movimientosPosibles.length; i++) {
     let moves = movimientosPosibles[i];
-
-    if (paso === 0) {
-      moves = movimientosPosibles[random(0, 7)];
-    }
 
     const xNuevo = x + moves[0];
     const yNuevo = y + moves[1];

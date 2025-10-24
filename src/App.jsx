@@ -89,6 +89,8 @@ export default function App() {
           <input
             type="number"
             value={n}
+            min = {4}
+            max = {7}
             disabled={ejecutando}
             onChange={(e) => {
               const val = parseInt(e.target.value);
