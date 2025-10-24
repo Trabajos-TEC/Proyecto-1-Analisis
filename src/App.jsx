@@ -7,8 +7,8 @@ import { generarMatriz } from "./generar_matriz";
 import "./App.css";
 
 export default function App() {
-  const [n, setN] = useState(5);
-  const [tablero, setTablero] = useState(generarMatriz(5));
+  const [n, setN] = useState(4);
+  const [tablero, setTablero] = useState(generarMatriz(4));
   const [mostrar, setMostrar] = useState(true);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
@@ -18,7 +18,7 @@ export default function App() {
   const [mensaje2, setMensaje2] = useState("");
   const [inicio, setInicio] = useState(Date.now());
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
-  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); // 🔹 nuevo estado
+  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); 
 
   useEffect(() => {
     if (!ejecutando) {
@@ -97,8 +97,8 @@ export default function App() {
             type="number"
             value={n}
             disabled={ejecutando}
-            min={3}
-            max={8}
+            min={4}
+            max={7}
             onChange={(e) => {
               const val = parseInt(e.target.value);
               
@@ -178,7 +178,6 @@ export default function App() {
             <option value="cerrado">Recorrido Cerrado</option>
           </select>
         </label>
-
 
         <button onClick={ejecutar} disabled={ejecutando}>
           {ejecutando ? "Ejecutando..." : "Iniciar Knight's Tour"}

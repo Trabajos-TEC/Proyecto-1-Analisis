@@ -29,24 +29,24 @@ export function generarMatriz(n) {
 function esValido(x, y, tablero) {
   const n = tablero.length;
 
-  //Verifica que (x, y) esté dentro de los limites del tablero
+  // Verifica que (x, y) esté dentro de los limites del tablero
   if (x < 0 || x >= n || y < 0 || y >= n) {
     return false;
   }
 
-  //Verifica que la casilla este libre (sin visitar)
+  // Verifica que la casilla este libre (sin visitar)
   if (tablero[x][y] !== -1) {
     return false;
   }
 
-  //Si paso las dos pruebas, es valida
+  // Si paso las dos pruebas, es valida
   return true;
 }
-export async function recorrido_cerrado(
-  x, y, paso, tablero, mostrar, setTablero, setContador, inicio, setPosActual,
-  xInicio = x, yInicio = y // guardamos la posición inicial
-) {
-  // Crear copia del tablero
+export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero, setContador, inicio, setPosActual, xInicio = x, yInicio = y,primerPasoIntentos = 0) {
+  if (tablero.length === 4 || tablero.length % 2 === 1){
+    return false
+  }
+  
   const t = [];
   for (let i = 0; i < tablero.length; i++) {
     const fila = [];
@@ -72,14 +72,17 @@ export async function recorrido_cerrado(
   let tiempoTranscurrido = (Date.now() - inicio) / 1000;
   let delay = 0;
 
-  if (tiempoTranscurrido > 10 && tiempoTranscurrido <= 20) delay = 0;
-  if (tiempoTranscurrido > 20) delay = 0;
+  if (tiempoTranscurrido > 10 && tiempoTranscurrido <= 20) {
+    delay = 0;
+  }
 
-  if (mostrar) await new Promise((resolve) => setTimeout(resolve, delay));
+  if (tiempoTranscurrido > 20) {
+    delay = 0;
+  }
 
   const size = t.length;
 
-  // ✅ Condición de éxito (recorrido cerrado)
+  // Condición de éxito (recorrido cerrado)
   if (paso === size * size - 1) {
     for (const move of movimientosPosibles) {
       const xCierre = x + move[0];
@@ -103,6 +106,10 @@ export async function recorrido_cerrado(
     const yNuevo = y + moves[1];
 
     if (esValido(xNuevo, yNuevo, t)) {
+      let nuevosIntentosPrimerPaso = primerPasoIntentos;
+      if (paso === 0) nuevosIntentosPrimerPaso++;
+
+
       if (
         await recorrido_cerrado(
           xNuevo,

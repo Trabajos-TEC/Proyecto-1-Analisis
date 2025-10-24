@@ -31,8 +31,7 @@ function esValido(x, y, tablero) {
   return true;
 }
 
-export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual,primerPasoIntentos = 0){ // actualiza la posición del caballo) 
-  
+export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual,primerPasoIntentos = 0){ 
   const t = [];
   for (let i = 0; i < tablero.length; i++) {
     const fila = [];
