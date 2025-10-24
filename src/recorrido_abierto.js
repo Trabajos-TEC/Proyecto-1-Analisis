@@ -67,10 +67,12 @@ export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setC
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
+  // Condicion de exito
   const size = t.length;
   if (paso === size * size - 1){
     return true
   }
+
   for (let i = 0; i < movimientosPosibles.length; i++) {
     let moves = movimientosPosibles[i]
   

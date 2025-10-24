@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Tablero from "./components/Tablero";
 import Contadores from "./components/Contadores";
-import {recorrido_abierto } from "./recorrido_abierto";
-import {recorrido_cerrado } from "./recorrido_cerrado";
-import { generarMatriz} from "./generar_matriz";
+import { recorrido_abierto } from "./recorrido_abierto";
+import { recorrido_cerrado } from "./recorrido_cerrado";
+import { generarMatriz } from "./generar_matriz";
 import "./App.css";
 
 export default function App() {
@@ -15,9 +15,10 @@ export default function App() {
   const [contador, setContador] = useState({ count: 0, backtracks: 0 });
   const [ejecutando, setEjecutando] = useState(false);
   const [mensaje, setMensaje] = useState("");
-  const [mensaje2, setMensaje2] = useState(""); // ✅ corregido nombre duplicado
+  const [mensaje2, setMensaje2] = useState("");
   const [inicio, setInicio] = useState(Date.now());
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
+  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); // 🔹 nuevo estado
 
   useEffect(() => {
     if (!ejecutando) {
@@ -27,7 +28,7 @@ export default function App() {
 
   const ejecutar = async () => {
     setEjecutando(true);
-    const tiempoInicio = Date.now(); // ⏱️ Tomamos el inicio real aquí
+    const tiempoInicio = Date.now();
     setInicio(tiempoInicio);
     setMensaje("");
     setMensaje2("");
@@ -37,24 +38,43 @@ export default function App() {
     setContador({ count: 0, backtracks: 0 });
     setPosActual({ x: posX, y: posY });
 
-    const exito = await recorrido_abierto(
-      posX,
-      posY,
-      0,
-      t,
-      mostrar,
-      setTablero,
-      setContador,
-      tiempoInicio,
-      setPosActual
-    );
+    let exito = false;
+
+    // 🔹 Seleccionamos cuál recorrido ejecutar
+    if (tipoRecorrido === "abierto") {
+      exito = await recorrido_abierto(
+        posX,
+        posY,
+        0,
+        t,
+        mostrar,
+        setTablero,
+        setContador,
+        tiempoInicio,
+        setPosActual
+      );
+    } else {
+      exito = await recorrido_cerrado(
+        posX,
+        posY,
+        0,
+        t,
+        mostrar,
+        setTablero,
+        setContador,
+        tiempoInicio,
+        setPosActual
+      );
+    }
 
     const tiempoFinal = Date.now();
     const duracionSegundos = ((tiempoFinal - tiempoInicio) / 1000).toFixed(2);
 
     setEjecutando(false);
     setMensaje(
-      exito ? "¡Se encontró una solución!" : "No se encontró solución."
+      exito
+        ? `¡Se encontró una solución (${tipoRecorrido})!`
+        : `No se encontró solución (${tipoRecorrido}).`
     );
     setMensaje2(`Tiempo de ejecución: ${duracionSegundos} segundos`);
   };
@@ -121,6 +141,22 @@ export default function App() {
           />
         </label>
 
+        {/* 🔹 Selector de tipo de recorrido */}
+        <label id="label-tipo-recorrido" className="input-tipo-recorrido">
+          Tipo de recorrido:
+          <select
+            id="select-tipo-recorrido"
+            className="select-tipo-recorrido"
+            value={tipoRecorrido}
+            disabled={ejecutando}
+            onChange={(e) => setTipoRecorrido(e.target.value)}
+          >
+            <option value="abierto">Recorrido Abierto</option>
+            <option value="cerrado">Recorrido Cerrado</option>
+          </select>
+        </label>
+
+
         <button onClick={ejecutar} disabled={ejecutando}>
           {ejecutando ? "Ejecutando..." : "Iniciar Knight's Tour"}
         </button>
@@ -129,7 +165,7 @@ export default function App() {
       <Tablero tablero={tablero} posActual={posActual} />
       <Contadores
         contador={contador}
-        mensaje={`${mensaje} ${mensaje2}`} // ✅ Muestra ambos mensajes juntos
+        mensaje={`${mensaje} ${mensaje2}`}
         ejecutando={ejecutando}
         inicio={inicio}
       />
