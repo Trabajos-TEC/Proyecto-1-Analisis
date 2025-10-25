@@ -37,7 +37,7 @@ export default function App() {
   const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); //nuevo estado
 
 
-    /*
+  /*
    * useEffect
    * Entradas: [posX, posY, ejecutando]
    * Salida: Actualización del estado posActual.
@@ -48,7 +48,22 @@ export default function App() {
       setPosActual({ x: posX, y: posY });
     }
   }, [posX, posY, ejecutando]);
-
+  /*
+   * useEffect
+   * Entradas: [posX, posY, ejecutando]
+   * Salida: Actualización del estado posActual.
+   * Descripción: Actualiza la interfaz cada que se tiene interaccion con alguna funcion.
+   */
+  useEffect(() => 
+    {
+    if (!ejecutando) {
+      setTablero(generarMatriz(n));
+      setPosActual({ x: posX, y: posY });
+      setMensaje("");
+      setMensaje2("");
+      setContador({ count: 0, backtracks: 0 });
+    }
+  }, [n, tipoRecorrido, posX, posY,mostrar]);
 
   /*
    * ejecutar

@@ -4,10 +4,6 @@
  * utilizando backtracking y visualización paso a paso con React.
  */
 
-
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 const movimientosPosibles = [
   [2, 1],
   [1, 2],

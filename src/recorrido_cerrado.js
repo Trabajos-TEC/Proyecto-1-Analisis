@@ -1,8 +1,5 @@
 
-// Movimientos del caballo
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+
 const movimientosPosibles = [
   [2, 1],
   [1, 2],
@@ -14,34 +11,37 @@ const movimientosPosibles = [
   [2, -1],
 ];
 
-export function generarMatriz(n) {
-    let res = [];
-    for (let i = 0; i < n; i++) {
-        let temp = [];
-        for (let j = 0; j < n; j++) {
-            temp.push(-1);
-        }
-        res.push(temp);
-    }
-    return res;
-}
+/*
+ * Función: esValido
+ * Entradas:
+ *   - x: posición fila actual.
+ *   - y: posición columna actual.
+ *   - tablero: matriz que representa el tablero del recorrido.
+ * Salida:
+ *   - true si la posición es válida, false si no lo es.
+ * Descripción:
+ *   Verifica que la posición (x, y) esté dentro de los límites del tablero
+ *   y que la casilla esté libre (-1) o marcada como retroceso (-2).
+ */
 
 function esValido(x, y, tablero) {
   const n = tablero.length;
 
-  // Verifica que (x, y) esté dentro de los limites del tablero
+  //Verifica que (x, y) esté dentro de los limites del tablero
   if (x < 0 || x >= n || y < 0 || y >= n) {
     return false;
   }
 
-  // Verifica que la casilla este libre (sin visitar)
-  if (tablero[x][y] !== -1) {
+  //Verifica que la casilla este libre (sin visitar)
+  // Permitimos -1 (nunca visitada) y -2 (marcada por backtrack)
+  if (tablero[x][y] !== -1 && tablero[x][y] !== -2) {
     return false;
   }
 
-  // Si paso las dos pruebas, es valida
+  //Si paso las dos pruebas, es valida
   return true;
 }
+
 export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero, setContador, inicio, setPosActual, xInicio = x, yInicio = y,primerPasoIntentos = 0) {
   if (tablero.length === 4 || tablero.length % 2 === 1){
     return false
@@ -70,16 +70,16 @@ export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero
 
   // Animación y control de tiempo
   let tiempoTranscurrido = (Date.now() - inicio) / 1000;
-  let delay = 0;
+  let delay = 1000;
 
-  if (tiempoTranscurrido > 10 && tiempoTranscurrido <= 20) {
+  if (tiempoTranscurrido >= 120) {
     delay = 0;
   }
 
-  if (tiempoTranscurrido > 20) {
-    delay = 0;
+  // Promesa para "ejecutar" el delay
+  if (mostrar) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
-
   const size = t.length;
 
   // Condición de éxito (recorrido cerrado)
@@ -98,10 +98,6 @@ export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero
   for (let i = 0; i < movimientosPosibles.length; i++) {
     let moves = movimientosPosibles[i];
 
-    if (paso === 0) {
-      moves = movimientosPosibles[random(0, 7)];
-    }
-
     const xNuevo = x + moves[0];
     const yNuevo = y + moves[1];
 
@@ -109,6 +105,9 @@ export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero
       let nuevosIntentosPrimerPaso = primerPasoIntentos;
       if (paso === 0) nuevosIntentosPrimerPaso++;
 
+      if (paso === 0 && nuevosIntentosPrimerPaso >= 8) {
+        return "NO_SOLUCION";
+      }
 
       if (
         await recorrido_cerrado(
@@ -130,29 +129,33 @@ export async function recorrido_cerrado(x, y, paso, tablero, mostrar, setTablero
     }
   }
 
-  // Backtracking
-  t[x][y] = -1;
 
-  if (setPosActual) setPosActual({ x, y });
+  // Si llegamos aquí, es que no hubo exito, retrocedemos
+  t[x][y] = -2;
+
+  if (setPosActual) {
+    setPosActual({ x, y }); // actualiza la posición al retroceder
+  }
 
   setContador((anterior) => ({
     count: anterior.count,
     backtracks: anterior.backtracks + 1,
   }));
 
-  // Copia del tablero para actualizar visualmente
-  const nuevoTablero = [];
+  // Actualizamos el tablero para mostrar la casilla roja
+  const tableroBack = [];
   for (let i = 0; i < t.length; i++) {
     const fila = [];
     for (let j = 0; j < t[i].length; j++) {
       fila.push(t[i][j]);
     }
-    nuevoTablero.push(fila);
+    tableroBack.push(fila);
+  }
+  setTablero(tableroBack);
+
+  if (mostrar) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
-  setTablero(nuevoTablero);
-
-  if (mostrar) await new Promise((resolve) => setTimeout(resolve, delay));
-
-  return false;
+    return false;
 }
