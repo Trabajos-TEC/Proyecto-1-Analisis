@@ -1,3 +1,12 @@
+/*
+ * Archivo: App.jsx
+ * Descripción: Componente principal de la aplicación "Knight's Tour Visualizer".
+ *              Gestiona el estado global, los parámetros del tablero, el tipo de recorrido,
+ *              y controla la ejecución del algoritmo de recorrido abierto o cerrado.
+ *              Además, coordina los componentes hijos: Tablero y Contadores.
+ */
+
+// Importaciones de React y componentes auxiliares
 import { useState, useEffect } from "react";
 import Tablero from "./components/Tablero";
 import Contadores from "./components/Contadores";
@@ -6,6 +15,13 @@ import { recorrido_cerrado } from "./recorrido_cerrado";
 import { generarMatriz } from "./generar_matriz";
 import "./App.css";
 
+
+/*
+ * Componente principal: App
+ * Descripción: Controla la lógica y visualización del recorrido del caballo (Knight’s Tour).
+ * Gestiona los estados, la ejecución del algoritmo (abierto o cerrado),
+ * y la interacción del usuario mediante la interfaz.
+ */
 export default function App() {
   const [n, setN] = useState(5);
   const [tablero, setTablero] = useState(generarMatriz(5));
@@ -20,12 +36,27 @@ export default function App() {
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
   const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); //nuevo estado
 
+
+    /*
+   * useEffect
+   * Entradas: [posX, posY, ejecutando]
+   * Salida: Actualización del estado posActual.
+   * Descripción: Actualiza la posición del caballo cuando no se está ejecutando el algoritmo.
+   */
   useEffect(() => {
     if (!ejecutando) {
       setPosActual({ x: posX, y: posY });
     }
   }, [posX, posY, ejecutando]);
 
+
+  /*
+   * ejecutar
+   * Entradas: Ninguna (usa estados globales del componente)
+   * Salida: Actualiza el tablero con el recorrido del caballo y muestra el resultado.
+   * Descripción: Ejecuta el recorrido (abierto o cerrado) desde la posición inicial.
+   *              Controla los mensajes, tiempos y actualiza los contadores.
+   */
   const ejecutar = async () => {
     setEjecutando(true);
     const tiempoInicio = Date.now();
@@ -42,49 +73,28 @@ export default function App() {
 
     // Seleccionamos cuál recorrido ejecutar
     if (tipoRecorrido === "abierto") {
-      exito = await recorrido_abierto(
-        posX,
-        posY,
-        0,
-        t,
-        mostrar,
-        setTablero,
-        setContador,
-        tiempoInicio,
-        setPosActual
-      );
+      exito = await recorrido_abierto(posX, posY, 0, t, mostrar, setTablero, setContador, tiempoInicio, setPosActual);
     } else {
-      exito = await recorrido_cerrado(
-        posX,
-        posY,
-        0,
-        t,
-        mostrar,
-        setTablero,
-        setContador,
-        tiempoInicio,
-        setPosActual
-      );
+      exito = await recorrido_cerrado(posX, posY, 0, t, mostrar, setTablero, setContador, tiempoInicio,setPosActual);
     }
 
+    // Cálculo del tiempo total de ejecución
     const tiempoFinal = Date.now();
     const duracionSegundos = ((tiempoFinal - tiempoInicio) / 1000).toFixed(2);
 
+    // Mensajes de resultad
     setEjecutando(false);
     if (exito === "NO_SOLUCION") {
       setMensaje(`No hay solución posible desde la posición inicial (${posX}, ${posY})`);
     } else {
       setMensaje(
-        exito
-          ? `¡Se encontró una solución (${tipoRecorrido})!`
-          : `No se encontró solución (${tipoRecorrido}).`
+        exito ? `¡Se encontró una solución (${tipoRecorrido})!` : `No se encontró solución (${tipoRecorrido}).`
       );
     }
-
     setMensaje2(`Tiempo de ejecución: ${duracionSegundos} segundos`);
   };
 
-
+ /* ||||||||||||||||||||||||||||| - INTERFAZ DE USUARIO - ||||||||||||||||||||||||||||| */
 
   return (
     <div className="app">
