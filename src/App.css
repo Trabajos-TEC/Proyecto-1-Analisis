@@ -104,6 +104,12 @@ h1 {
   color: #fff;
 }
 
+.celda-backtrack {
+  background-color: crimson;
+  color: white;
+  transition: background-color 0.15s ease;
+}
+
 .celda-caballo img {
   width: 40px;
   height: 40px;
@@ -159,3 +165,10 @@ h1 {
   cursor: not-allowed;
 }
 
+.numero-paso {
+  color: #ffffffdf; /* gris */
+  font-weight: bold;
+  font-size: 1rem;
+  -webkit-text-stroke: 1px rgb(0, 0, 0); /* borde blanco */
+
+}

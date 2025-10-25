@@ -1,7 +1,9 @@
-// Movimientos del caballo
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+/*
+ * Archivo: recorrido_abierto.js
+ * Descripción: Implementa el algoritmo del recorrido abierto del caballo (Knight’s Tour)
+ * utilizando backtracking y visualización paso a paso con React.
+ */
+
 const movimientosPosibles = [
   [2, 1],
   [1, 2],
@@ -13,6 +15,18 @@ const movimientosPosibles = [
   [2, -1],
 ];
 
+/*
+ * Función: esValido
+ * Entradas:
+ *   - x: posición fila actual.
+ *   - y: posición columna actual.
+ *   - tablero: matriz que representa el tablero del recorrido.
+ * Salida:
+ *   - true si la posición es válida, false si no lo es.
+ * Descripción:
+ *   Verifica que la posición (x, y) esté dentro de los límites del tablero
+ *   y que la casilla esté libre (-1) o marcada como retroceso (-2).
+ */
 
 function esValido(x, y, tablero) {
   const n = tablero.length;
@@ -23,7 +37,8 @@ function esValido(x, y, tablero) {
   }
 
   //Verifica que la casilla este libre (sin visitar)
-  if (tablero[x][y] !== -1) {
+  // Permitimos -1 (nunca visitada) y -2 (marcada por backtrack)
+  if (tablero[x][y] !== -1 && tablero[x][y] !== -2) {
     return false;
   }
 
@@ -31,92 +46,123 @@ function esValido(x, y, tablero) {
   return true;
 }
 
-export async function recorrido_abierto(x,y,paso,tablero,mostrar,setTablero,setContador,inicio,setPosActual,primerPasoIntentos = 0){ 
+/*
+ * Función: recorrido_abierto
+ * Entradas:
+ *   - x, y: posición actual del caballo.
+ *   - paso: número del paso actual.
+ *   - tablero: matriz que representa el recorrido.
+ *   - mostrar: booleano indica si se muestran los pasos visualmente.
+ *   - setTablero: función de React que actualiza el tablero visual.
+ *   - setContador: función de React que actualiza los contadores de pasos y retrocesos.
+ *   - inicio: marca de tiempo del inicio de ejecución.
+ *   - setPosActual: función de React que actualiza la posición actual del caballo.
+ *   - primerPasoIntentos: número de intentos del primer movimiento (para limitar el inicio).
+ * Salida:
+ *   - true: si se encontró una solución completa.
+ *   - "NO_SOLUCION": si no hay solución desde la posición inicial.
+ *   - false: si se requiere retroceder (backtracking).
+ * Descripción:
+ *   Ejecuta recursivamente el recorrido abierto del caballo utilizando backtracking.
+ *   Actualiza visualmente el tablero, los contadores y la posición del caballo.
+ */
+
+export async function recorrido_abierto(
+  x, y, paso, tablero, mostrar, setTablero, setContador, inicio, setPosActual, primerPasoIntentos = 0) {
+
+  // Se crea una copia del tablero para no modificar el original
   const t = [];
   for (let i = 0; i < tablero.length; i++) {
     const fila = [];
     for (let j = 0; j < tablero[i].length; j++) {
-      fila.push(tablero[i][j]); // copiamos cada valor
+      fila.push(tablero[i][j]);
     }
-    t.push(fila); // agregamos la fila copiada al nuevo tablero
+    t.push(fila);
   }
 
+  // Se marca la casilla actual con el número de paso
   t[x][y] = paso;
 
   if (setPosActual) setPosActual({ x, y }); // se actualiza al avanzar
 
   // Actualizamos el contador de intentos
-  setContador(anterior => ({ count: anterior.count + 1, backtracks: anterior.backtracks }));
+  setContador((anterior) => ({ count: anterior.count + 1, backtracks: anterior.backtracks }));
 
   // Actualizamos el tablero
   setTablero(t);
 
+  // Control del tiempo para ajustar la velocidad de visualización
   let tiempoTranscurrido = (Date.now() - inicio) / 1000;
-  let delay = 0;
+  let delay = 1000;
 
-  if (tiempoTranscurrido > 10 && tiempoTranscurrido <= 20) {
+  if (tiempoTranscurrido >= 120) {
     delay = 0;
   }
 
-  if (tiempoTranscurrido > 20) {
-    delay = 0;
-  }
-
+  // Promesa para "ejecutar" el delay
   if (mostrar) {
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   // Condicion de exito
   const size = t.length;
-  if (paso === size * size - 1){
-    return true
+  if (paso === size * size - 1) {
+    return true;
   }
 
   for (let i = 0; i < movimientosPosibles.length; i++) {
-    let moves = movimientosPosibles[i]
-  
+    let moves = movimientosPosibles[i];
+
+    // Selección en orden de la lista de movimientos
     const xNuevo = x + moves[0];
     const yNuevo = y + moves[1];
-    
+
     if (esValido(xNuevo, yNuevo, t)) {
-      // Verificamos si ya hemos intentado todas las opciones desde el primer paso
-
       let nuevosIntentosPrimerPaso = primerPasoIntentos;
-      if (paso === 0) nuevosIntentosPrimerPaso++;
-
-      if (paso === 0 && nuevosIntentosPrimerPaso >= 8) {
-          return "NO_SOLUCION";
+      if (paso === 0) {
+        nuevosIntentosPrimerPaso++;
       }
 
-      if ((await recorrido_abierto(xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual, nuevosIntentosPrimerPaso))){
+      // Limita los intentos del primer paso para evitar bucles infinitos
+      if (paso === 0 && nuevosIntentosPrimerPaso >= 8) {
+        return "NO_SOLUCION";
+      }
+
+      // Llamada recursiva
+      if (
+        await recorrido_abierto( xNuevo, yNuevo, paso + 1, t, mostrar, setTablero, setContador, inicio, setPosActual, nuevosIntentosPrimerPaso )
+      ) {
         return true;
       }
     }
   }
-  // Backtracking: desmarcamos la casilla y actualizamos la UI
-  t[x][y] = -1;
 
-  if (setPosActual) {
-    setPosActual({ x, y }); // actualizamos la posición al retroceder
+  // Si llegamos aquí, es que no hubo exito, retrocedemos
+t[x][y] = -2;
+
+if (setPosActual) {
+  setPosActual({ x, y }); // actualiza la posición al retroceder
+}
+
+setContador((anterior) => ({
+  count: anterior.count,
+  backtracks: anterior.backtracks + 1,
+}));
+
+// Actualizamos el tablero para mostrar la casilla roja
+const tableroBack = [];
+for (let i = 0; i < t.length; i++) {
+  const fila = [];
+  for (let j = 0; j < t[i].length; j++) {
+    fila.push(t[i][j]);
   }
+  tableroBack.push(fila);
+}
+setTablero(tableroBack);
 
-  // Contador de retrocesos
-  setContador(anterior => ({ count: anterior.count, backtracks: anterior.backtracks + 1 }));
+if (mostrar) {
+  await new Promise((resolve) => setTimeout(resolve, delay));
+}
 
-  // Actualizamos el tablero con la nueva matriz (copia manual)
-  const nuevoTablero = [];
-  for (let i = 0; i < t.length; i++) {
-    const fila = [];
-    for (let j = 0; j < t[i].length; j++) {
-      fila.push(t[i][j]);
-    }
-    nuevoTablero.push(fila);
-  }
-  setTablero(nuevoTablero);
-
-  // Espera para animación si se está mostrando
-  if (mostrar) {
-    await new Promise((resolve) => setTimeout(resolve, delay));
-  }
   return false;
 }
