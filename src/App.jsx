@@ -23,8 +23,8 @@ import "./App.css";
  * y la interacción del usuario mediante la interfaz.
  */
 export default function App() {
-  const [n, setN] = useState(5);
-  const [tablero, setTablero] = useState(generarMatriz(5));
+  const [n, setN] = useState(4);
+  const [tablero, setTablero] = useState(generarMatriz(4));
   const [mostrar, setMostrar] = useState(true);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
