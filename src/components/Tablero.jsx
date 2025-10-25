@@ -45,25 +45,27 @@ export default function Tablero({ tablero, posActual }) {
           }
 
           return (
-            <div
-              key={`${i}-${j}`}
-              className={`celda ${
-                celdaColor === "blanca" ? "celda-blanca" : "celda-negra"
-              } ${isRecorrida ? "celda-recorrida" : ""} ${
-                esRetroceso ? "celda-backtrack" : ""
-              } ${esCaballo ? "celda-caballo" : ""}`}
-            >
-              {esCaballo ? (
-                <img src={caballoImg} alt="Caballo" />
-              ) : isRecorrida ? (
-                val.toString().padStart(2, "0")
-              ) : (
-                ""
-              )}
-            </div>
+          <div
+            key={`${i}-${j}`}
+            className={`celda ${
+              celdaColor === "blanca" ? "celda-blanca" : "celda-negra"
+            } ${isRecorrida ? "celda-recorrida" : ""} ${
+              esRetroceso ? "celda-backtrack" : ""
+            } ${esCaballo ? "celda-caballo" : ""}`}
+          >
+            {esCaballo ? (
+              <img src={caballoImg} alt="Caballo" />
+            ) : isRecorrida ? (
+              <span className="numero-paso">{val.toString().padStart(2, "0")}</span>
+            ) : (
+              ""
+            )}
+          </div>
+
           );
         })
       )}
     </div>
   );
 }
+
