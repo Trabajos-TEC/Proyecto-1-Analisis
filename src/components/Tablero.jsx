@@ -16,7 +16,8 @@ export default function Tablero({ tablero, posActual }) {
       {tablero.map((fila, i) =>
         fila.map((val, j) => {
           const esCaballo = posActual?.x === i && posActual?.y === j;
-          const isRecorrida = val !== -1;
+          const esRetroceso = val === -2;
+          const isRecorrida = val !== -1 && val !== -2;
 
           const celdaColor = (i + j) % 2 === 0 ? "blanca" : "negra";
 
@@ -31,8 +32,8 @@ export default function Tablero({ tablero, posActual }) {
               className={`celda ${
                 celdaColor === "blanca" ? "celda-blanca" : "celda-negra"
               } ${isRecorrida ? "celda-recorrida" : ""} ${
-                esCaballo ? "celda-caballo" : ""
-              }`}
+                esRetroceso ? "celda-backtrack" : ""
+              } ${esCaballo ? "celda-caballo" : ""}`}
             >
               {esCaballo ? (
                 <img src={caballoImg} alt="Caballo" />

@@ -7,8 +7,8 @@ import { generarMatriz } from "./generar_matriz";
 import "./App.css";
 
 export default function App() {
-  const [n, setN] = useState(4);
-  const [tablero, setTablero] = useState(generarMatriz(4));
+  const [n, setN] = useState(5);
+  const [tablero, setTablero] = useState(generarMatriz(5));
   const [mostrar, setMostrar] = useState(true);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
@@ -18,7 +18,7 @@ export default function App() {
   const [mensaje2, setMensaje2] = useState("");
   const [inicio, setInicio] = useState(Date.now());
   const [posActual, setPosActual] = useState({ x: 0, y: 0 });
-  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); 
+  const [tipoRecorrido, setTipoRecorrido] = useState("abierto"); //nuevo estado
 
   useEffect(() => {
     if (!ejecutando) {
@@ -40,7 +40,7 @@ export default function App() {
 
     let exito = false;
 
-    // 🔹 Seleccionamos cuál recorrido ejecutar
+    // Seleccionamos cuál recorrido ejecutar
     if (tipoRecorrido === "abierto") {
       exito = await recorrido_abierto(
         posX,
@@ -97,13 +97,12 @@ export default function App() {
             type="number"
             value={n}
             disabled={ejecutando}
-            min={4}
-            max={7}
+            min={3}
+            max={8}
             onChange={(e) => {
               const val = parseInt(e.target.value);
-              
               if (isNaN(val) || val < 4 || val >= 8) {
-                alert(`La dimensión del tablero debe estar entre 4 y 7.`);
+                alert(`La dimensión del debe estar entre 4 y 7.`);
                 return;
                }
               setN(val);
@@ -164,7 +163,7 @@ export default function App() {
         </label>
 
 
-        {/* 🔹 Selector de tipo de recorrido */}
+        {/* Selector de tipo de recorrido */}
         <label id="label-tipo-recorrido" className="input-tipo-recorrido">
           Tipo de recorrido:
           <select
@@ -178,6 +177,7 @@ export default function App() {
             <option value="cerrado">Recorrido Cerrado</option>
           </select>
         </label>
+
 
         <button onClick={ejecutar} disabled={ejecutando}>
           {ejecutando ? "Ejecutando..." : "Iniciar Knight's Tour"}
