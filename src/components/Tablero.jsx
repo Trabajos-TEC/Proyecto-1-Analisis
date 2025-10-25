@@ -1,7 +1,25 @@
+/*
+ * Archivo: Tablero.jsx
+ * Descripción: Componente encargado de renderizar el tablero del Knight's Tour.
+ *              Muestra las casillas, los números de los pasos realizados,
+ *              retrocesos y la posición actual del caballo con imagen.
+ */
+
 import React from "react";
 import caballoBlanco from "../assets/caballo_blanco.png";
 import caballoNegro from "../assets/caballo_negro.png";
 import "../App.css";
+
+/*
+ * Componente: Tablero
+ * Entradas:
+ *   - tablero: matriz que representa el estado actual del tablero.
+ *   - posActual: objeto {x, y} que indica la posición actual del caballo.
+ * Salida: Renderiza visualmente el tablero con colores, retrocesos y el caballo.
+ * Descripción: Cada casilla se colorea alternadamente como blanca o negra.
+ *              Se marca con diferentes clases si ha sido recorrida, si es un backtrack,
+ *              o si actualmente contiene el caballo.
+ */
 
 export default function Tablero({ tablero, posActual }) {
   const n = tablero.length;
